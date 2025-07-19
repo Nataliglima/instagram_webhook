@@ -1,25 +1,27 @@
 from fastapi import FastAPI, Request
+from fastapi.responses import PlainTextResponse
 
 app = FastAPI()
 
-# Token secreto que você define e usa no Facebook Developers
-VERIFY_TOKEN = "meu_token_b12_supersecreto_987"
+VERIFY_TOKEN = "meu_token_b12_supersecreto_987"  # Substitua pelo seu token real
 
-# Endpoint GET para validação do webhook pelo Instagram
 @app.get("/")
-async def verify_webhook(request: Request):
-    params = dict(request.query_params)
+async def verify(request: Request):
+    # Recupera os parâmetros da query
+    params = request.query_params
     mode = params.get("hub.mode")
     token = params.get("hub.verify_token")
     challenge = params.get("hub.challenge")
 
+    # Verifica se o token está correto
     if mode == "subscribe" and token == VERIFY_TOKEN:
-        return int(challenge)
-    return {"error": "Token inválido"}
+        return PlainTextResponse(content=challenge, status_code=200)
+    else:
+        return PlainTextResponse(content="Unauthorized", status_code=403)
 
-# Endpoint POST para receber eventos (menções, comentários, etc)
 @app.post("/")
-async def webhook(request: Request):
-    data = await request.json()
-    print("📩 Webhook recebido:", data)
-    return {"status": "recebido"}
+async def receive_webhook(request: Request):
+    body = await request.json()
+    print("Recebido:", body)
+    return {"status": "ok"}
+
