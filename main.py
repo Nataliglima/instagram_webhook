@@ -1,12 +1,13 @@
 from fastapi import FastAPI, Request
-import uvicorn
 
 app = FastAPI()
 
-VERIFY_TOKEN = "meu_token_b12_supersecreto_987"  # personalize aqui
+# Token secreto que você define e usa no Facebook Developers
+VERIFY_TOKEN = "meu_token_b12_supersecreto_987"
 
+# Endpoint GET para validação do webhook pelo Instagram
 @app.get("/")
-async def verify(request: Request):
+async def verify_webhook(request: Request):
     params = dict(request.query_params)
     mode = params.get("hub.mode")
     token = params.get("hub.verify_token")
@@ -16,9 +17,9 @@ async def verify(request: Request):
         return int(challenge)
     return {"error": "Token inválido"}
 
+# Endpoint POST para receber eventos (menções, comentários, etc)
 @app.post("/")
 async def webhook(request: Request):
     data = await request.json()
     print("📩 Webhook recebido:", data)
     return {"status": "recebido"}
-
