@@ -7,13 +7,11 @@ VERIFY_TOKEN = "meu_token_b12_supersecreto_987"  # Substitua pelo seu token real
 
 @app.get("/")
 async def verify(request: Request):
-    # Recupera os parâmetros da query
     params = request.query_params
     mode = params.get("hub.mode")
     token = params.get("hub.verify_token")
     challenge = params.get("hub.challenge")
 
-    # Verifica se o token está correto
     if mode == "subscribe" and token == VERIFY_TOKEN:
         return PlainTextResponse(content=challenge, status_code=200)
     else:
