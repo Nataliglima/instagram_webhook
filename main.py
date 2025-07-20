@@ -5,8 +5,10 @@ import uvicorn
 
 app = FastAPI()
 
-VERIFY_TOKEN = "meu_token_b12_supersecreto_987"  # Use o mesmo token configurado no Instagram
+# Pegando o token da variável de ambiente (mais seguro)
+VERIFY_TOKEN = os.environ.get("VERIFY_TOKEN", "meu_token_b12_supersecreto_987")
 
+# ✅ Rota para validação do Webhook (GET)
 @app.get("/")
 async def verify(
     hub_mode: str = Query(..., alias="hub.mode"),
@@ -17,14 +19,16 @@ async def verify(
         return PlainTextResponse(content=hub_challenge, status_code=200)
     return PlainTextResponse(content="Unauthorized", status_code=403)
 
+# ✅ Rota para receber eventos (POST)
 @app.post("/")
 async def receive_webhook(request: Request):
     body = await request.json()
     print("Recebido:", body)
     return {"status": "ok"}
 
-# 👇 ESTE BLOCO FINAL É A DICA EXTRA
+# ✅ Executa corretamente no Render com porta dinâmica
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
+
 
