@@ -1,6 +1,9 @@
-services:
-  - type: web
-    name: instagram-webhook
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.principal:app --host=0.0.0.0 --port=$PORT
+envVars:
+  - key: VERIFY_TOKEN
+    value: tokeninstagramsupersegurobi12
+  - key: INSTAGRAM_CLIENT_ID
+    value: seu_client_id_aqui
+  - key: INSTAGRAM_CLIENT_SECRET
+    value: seu_client_secret_aqui
+  - key: INSTAGRAM_REDIRECT_URI
+    value: https://instagram-webhook.onrender.com/callback
