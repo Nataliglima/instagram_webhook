@@ -31,9 +31,11 @@ VERIFY_TOKEN = os.environ.get("VERIFY_TOKEN", "default_token_seguro")
 async def startup_event():
     port = int(os.environ.get("PORT", 8000))
     logger.info(f"✅ Servidor iniciado na porta {port}")
-    logger.info(f"✅ VERIFY_TOKEN configurado: {bool(VERIFY_TOKEN)}")
 
-    if not VERIFY_TOKEN or VERIFY_TOKEN == "default_token_seguro":
+    if VERIFY_TOKEN and VERIFY_TOKEN != "default_token_seguro":
+        logger.info(f"✅ VERIFY_TOKEN configurado: SIM")
+        logger.info(f"🔐 Token verificação (mascarado): {VERIFY_TOKEN[:4]}...{VERIFY_TOKEN[-4:]}")
+    else:
         logger.error("⚠️ AVISO CRÍTICO: VERIFY_TOKEN não configurado corretamente!")
         logger.info("ℹ️ Configure a variável de ambiente VERIFY_TOKEN no Render")
 
@@ -70,7 +72,7 @@ async def verify_webhook(request: Request):
         return PlainTextResponse(content=challenge)
 
     # Mascarar o token esperado para logs
-    token_esperado_mascarado = f"{VERIFY_TOKEN[:2]}...{VERIFY_TOKEN[-2:]}" if VERIFY_TOKEN else "N/A"
+    token_esperado_mascarado = f"{VERIFY_TOKEN[:4]}...{VERIFY_TOKEN[-4:]}" if VERIFY_TOKEN else "N/A"
     error_detail = f"Falha na verificação: mode={mode}, token_recebido={token}, token_esperado={token_esperado_mascarado}"
     logger.error(f"❌ {error_detail}")
 
@@ -122,6 +124,7 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("app.principal:app", host="0.0.0.0", port=port, reload=True)
+
 
 
 
