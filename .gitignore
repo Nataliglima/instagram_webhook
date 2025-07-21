@@ -4,4 +4,7 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-*.log
+*.logvenv/
+.env
+__pycache__/
+*.pyc
